@@ -1,13 +1,20 @@
 package com.tatf.modules.adminces.pom;
 
 import com.tatf.core.browser.IBrowser;
+import com.tatf.core.util.ConfigReader;
 
 public class AccesoPO {
 
     private final IBrowser browser;
 
+    private static final ConfigReader CONFIG =
+            new ConfigReader("config.properties");
+
     private static final String URL_ADMINCES =
-            "http://cestore.ces.com.uy/adminces/";
+            CONFIG.asString("adminces.url");
+
+    private static final String CLAVE_ACCESO =
+            CONFIG.asString("adminces.access_key");
 
     private static final String CAMPO_CLAVE =
             "input[type='password']";
@@ -27,11 +34,11 @@ public class AccesoPO {
     }
 
 
-    public void ingresarClave(String clave) {
+    public void ingresarClave() {
         browser.find()
                 .css(CAMPO_CLAVE)
                 .clear()
-                .write(clave);
+                .write(CLAVE_ACCESO);
     }
 
 
@@ -42,13 +49,15 @@ public class AccesoPO {
     }
 
 
-    public InicioPO acceder(String clave) {
+    public InicioPO acceder() {
 
         abrir();
-        ingresarClave(clave);
+        ingresarClave();
         clickIngresar();
 
-        InicioPO inicioPO = new InicioPO(browser);
+        InicioPO inicioPO =
+                new InicioPO(browser);
+
         inicioPO.esperarCarga();
 
         return inicioPO;

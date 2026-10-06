@@ -4,39 +4,56 @@ import com.tatf.core.browser.BrowserFactory;
 import com.tatf.core.browser.IBrowser;
 import com.tatf.core.verification.IVerify;
 import com.tatf.modules.adminces.data.AdminCesData;
-import com.tatf.modules.adminces.task.AdminCesTask;
+import com.tatf.modules.adminces.task.CrearAdministradorTask;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class CrearAdministradorTest {
 
-    private static IBrowser browser;
-    private static IVerify verify;
+    private IBrowser browser;
+    private IVerify verify;
 
 
-    @BeforeAll
-    static void beforeAll() {
+    @BeforeEach
+    void beforeEach() {
         browser = BrowserFactory.getBrowser(true);
         verify = IVerify.create();
     }
 
 
-    @AfterAll
-    static void afterAll() {
+    @AfterEach
+    void afterEach() {
         BrowserFactory.quitBrowser();
     }
 
 
-    @Test
-    void crearCuentaAdministrador() {
+    @ParameterizedTest(
+            name = "Crear Administrador -> Nombre: {0}, Apellido: {1}, País: {2}"
+    )
+    @CsvFileSource(
+            resources = "/datos_administradores.csv",
+            numLinesToSkip = 1
+    )
+    void crearCuentaAdministrador(
+            String nombre,
+            String apellido,
+            String pais,
+            String password
+    ) {
 
         AdminCesData data =
-                new AdminCesData();
+                AdminCesData.paraAdministrador(
+                        nombre,
+                        apellido,
+                        pais,
+                        password
+                );
 
-        AdminCesTask task =
-                new AdminCesTask(
+        CrearAdministradorTask task =
+                new CrearAdministradorTask(
                         browser,
                         verify,
                         data
